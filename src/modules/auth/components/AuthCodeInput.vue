@@ -62,7 +62,7 @@ const handlePaste = (event: ClipboardEvent) => {
 <template>
     <div class="flex gap-2 sm:gap-3 justify-center w-full my-6">
         <input 
-            v-for="(index) in 6" 
+            v-for="(_, index) in 6" 
             :key="index"
             :ref="(el) => { if (el) inputRefs[index] = el as HTMLInputElement }" 
             type="text" 
