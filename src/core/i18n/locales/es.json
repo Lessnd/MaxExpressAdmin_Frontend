@@ -1,0 +1,34 @@
+{
+    "common": {
+        "loading": "Cargando...",
+        "actions": "Acciones",
+        "save": "Guardar",
+        "cancel": "Cancelar",
+        "back": "Volver"
+    },
+    "auth": {
+        "welcome_back": "Bienvenido",
+        "enter_credentials": "Ingresa tus credenciales para continuar",
+        "email": "Correo Electrónico",
+        "password": "Contraseña",
+        "login_button": "Iniciar Sesión",
+        "logging_in": "Iniciando sesión...",
+        "forgot_password": "¿Olvidaste tu contraseña?",
+        "verification_title": "Verificación",
+        "verification_sent": "Hemos enviado un código de 6 dígitos a tu correo."
+    },
+    "dashboard": {
+        "greeting": {
+            "morning": "¡Buenos días",
+            "afternoon": "¡Buenas tardes",
+            "night": "¡Buenas noches"
+        },
+        "menu": {
+            "home": "Inicio",
+            "clients": "Clientes",
+            "employees": "Empleados",
+            "packages": "Paquetes",
+            "logout": "Cerrar Sesión"
+        }
+    }
+}
