@@ -20,8 +20,9 @@ const handleInput = (event: Event, index: number) => {
     // Actualizamos el modelo con el último caracter ingresado
     modelValue.value[index] = val.slice(-1)
 
-    // LOGICA DE AUTO-FOCO CORREGIDA
-    // Si hay valor y NO es el último input, saltamos al siguiente
+    // LOGICA DE AUTO-FOCO
+    // Ahora index es base 0 (0-5). 
+    // Si estoy en la casilla 4 (quinta visualmente): 4 < 5 es TRUE -> Salta a la 5 (sexta visualmente)
     if (val && index < modelValue.value.length - 1) {
         nextTick(() => {
             const nextInput = inputRefs.value[index + 1]
@@ -33,10 +34,8 @@ const handleInput = (event: Event, index: number) => {
 }
 
 const handleKeyDown = (event: KeyboardEvent, index: number) => {
-    // Lógica de borrado (Backspace)
-    // Si presiona borrar, el campo está vacío, y no es el primero...
+    // Si presiona borrar, el campo está vacío, y no es el primero (index 0)
     if (event.key === 'Backspace' && !modelValue.value[index] && index > 0) {
-        // ...regresamos el foco al anterior
         nextTick(() => {
             const prevInput = inputRefs.value[index - 1]
             if (prevInput) prevInput.focus()
@@ -54,7 +53,6 @@ const handlePaste = (event: ClipboardEvent) => {
             if (i < 6) modelValue.value[i] = num
         })
 
-        // Enfocar el último llenado o el siguiente vacío
         const nextIndex = Math.min(numbers.length, 5)
         nextTick(() => inputRefs.value[nextIndex]?.focus())
     }
@@ -63,11 +61,19 @@ const handlePaste = (event: ClipboardEvent) => {
 
 <template>
     <div class="flex gap-2 sm:gap-3 justify-center w-full my-6">
-        <input v-for="( index ) in 6" :key="index"
-            :ref="(el) => { if (el) inputRefs[index] = el as HTMLInputElement }" type="text" inputmode="numeric"
-            maxlength="1" :value="modelValue[index]" @input="handleInput($event, index)"
-            @keydown="handleKeyDown($event, index)" @paste="handlePaste"
+        <input 
+            v-for="(n, index) in 6" 
+            :key="index"
+            :ref="(el) => { if (el) inputRefs[index] = el as HTMLInputElement }" 
+            type="text" 
+            inputmode="numeric"
+            maxlength="1" 
+            :value="modelValue[index]" 
+            @input="handleInput($event, index)"
+            @keydown="handleKeyDown($event, index)" 
+            @paste="handlePaste"
             class="w-10 h-12 sm:w-12 sm:h-14 text-center text-xl font-bold border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all bg-white shadow-sm"
-            :class="{ 'border-primary ring-1 ring-primary/20': modelValue[index] }" />
+            :class="{ 'border-primary ring-1 ring-primary/20': modelValue[index] }" 
+        />
     </div>
 </template>
