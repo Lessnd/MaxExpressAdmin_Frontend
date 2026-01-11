@@ -1,7 +1,8 @@
 <script setup lang="ts">
-// App.vue actúa solo como contenedor global
+import UiToast from './shared/components/ui/UiToast.vue';
 </script>
 
 <template>
   <router-view />
+  <UiToast />
 </template>

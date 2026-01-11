@@ -1,40 +1,70 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import UiInput from '@shared/components/ui/UiInput.vue'
 import UiButton from '@shared/components/ui/UiButton.vue'
+import { useToast } from '@shared/composables/useToast' // <--- 1. Importar Toast
+
+const props = defineProps<{
+    initialData?: any
+    loading?: boolean
+}>()
 
 const emit = defineEmits(['submit', 'cancel'])
 const { t } = useI18n()
+const { addToast } = useToast() // <--- 2. Instanciar
 
-// Simulamos carga
-defineProps<{ loading?: boolean }>()
+// Helper fecha
+const getYYYYMMDD = (isoString?: string) => {
+    if (!isoString) return new Date().toISOString().split('T')[0]
+    return new Date(isoString).toISOString().split('T')[0]
+}
 
 const form = ref({
     name: '',
     email: '',
     phone: '',
     city: '',
-    // Inicializamos con la fecha de hoy (formato YYYY-MM-DD para el input HTML)
-    registrationDate: new Date().toISOString().split('T')[0]
+    registrationDate: getYYYYMMDD()
 })
 
-// Validación simple
-const isValid = computed(() => form.value.name.length > 2 && form.value.email.includes('@'))
+const initForm = () => {
+    if (props.initialData) {
+        form.value = {
+            name: props.initialData.name,
+            email: props.initialData.email,
+            phone: props.initialData.phone,
+            city: props.initialData.city,
+            registrationDate: getYYYYMMDD(props.initialData.createdAt)
+        }
+    } else {
+        form.value = {
+            name: '', email: '', phone: '', city: '',
+            registrationDate: getYYYYMMDD()
+        }
+    }
+}
+
+onMounted(initForm)
+watch(() => props.initialData, initForm)
 
 const handleSubmit = () => {
-    // SOLUCIÓN: Usamos "|| ''" (fallback) para asegurar que nunca sea undefined.
-    // Si por alguna razón es undefined, new Date('') dará "Invalid Date", 
-    // pero new Date().toISOString() es más seguro como fallback final.
+    // 3. VALIDACIÓN MANUAL CON FEEDBACK DE ERROR
+    // Si el nombre o email están vacíos, mostramos el error visual
+    if (!form.value.name.trim() || !form.value.email.trim()) {
+        addToast('Error: Todos los campos obligatorios deben completarse', 'error')
+        return // Detenemos la ejecución
+    }
 
-    const dateValue = form.value.registrationDate || new Date().toISOString()
-    const localDate = new Date(dateValue)
-
-    // Verificamos que sea una fecha válida antes de enviar (Buenas prácticas)
-    if (isNaN(localDate.getTime())) {
-        console.error("Fecha inválida")
+    // Validación extra de formato de correo (opcional)
+    if (!form.value.email.includes('@')) {
+        addToast('Error: El formato del correo electrónico es inválido', 'error')
         return
     }
+
+    // Si pasa, preparamos el payload
+    const dateValue = form.value.registrationDate || new Date().toISOString()
+    const localDate = new Date(dateValue)
 
     const payload = {
         ...form.value,
@@ -47,10 +77,11 @@ const handleSubmit = () => {
 
 <template>
     <form @submit.prevent="handleSubmit" class="space-y-4">
-        <UiInput v-model="form.name" label="Nombre Completo" placeholder="Ej: Juan Pérez" />
+
+        <UiInput v-model="form.name" label="Nombre Completo *" placeholder="Ej: Juan Pérez" />
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <UiInput v-model="form.email" label="Correo" type="email" placeholder="cliente@empresa.com" />
+            <UiInput v-model="form.email" label="Correo *" type="email" placeholder="cliente@empresa.com" />
             <UiInput v-model="form.phone" label="Teléfono" placeholder="Ej: 7000-0000" />
         </div>
 
@@ -63,7 +94,8 @@ const handleSubmit = () => {
             <UiButton type="button" variant="ghost" @click="$emit('cancel')">
                 {{ t('common.cancel') }}
             </UiButton>
-            <UiButton type="submit" :disabled="!isValid || loading">
+
+            <UiButton type="submit" :disabled="loading">
                 {{ loading ? t('common.loading') : t('common.save') }}
             </UiButton>
         </div>
