@@ -7,6 +7,7 @@ const props = defineProps<{
     isOpen: boolean
     title?: string
     maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl'
+    hideHeader?: boolean // <--- NUEVA PROP
 }>()
 
 const emit = defineEmits(['close'])
@@ -48,7 +49,7 @@ const maxWidthClass = {
                     'relative w-full bg-white rounded-xl shadow-2xl ring-1 ring-gray-200 transform transition-all flex flex-col max-h-[90vh]',
                     maxWidthClass
                 )">
-                    <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+                    <div v-if="!hideHeader" class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
                         <h3 class="text-lg font-semibold text-gray-900">{{ title }}</h3>
                         <button @click="$emit('close')"
                             class="text-gray-400 hover:text-gray-500 hover:bg-gray-100 p-1 rounded-md transition-colors">

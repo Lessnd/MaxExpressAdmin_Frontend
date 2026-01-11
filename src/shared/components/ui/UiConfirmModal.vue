@@ -14,7 +14,12 @@ const emit = defineEmits(['close', 'confirm'])
 </script>
 
 <template>
-    <UiModal :is-open="isOpen" maxWidth="sm" @close="$emit('close')">
+    <UiModal 
+        :is-open="isOpen" 
+        maxWidth="sm" 
+        @close="$emit('close')"
+        :hide-header="true"
+    >
         <div class="flex flex-col items-center text-center p-2">
             <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4 text-red-600">
                 <AlertTriangle class="w-6 h-6" />
