@@ -34,12 +34,19 @@ const router = createRouter({
                     component: () => import('@modules/dashboard/views/DashboardView.vue')
                 },
 
-                // 🟩 NUEVO: Módulo de Clientes
+                // NUEVO: Módulo de Clientes
                 {
                     // Definimos la ruta completa relativa a la raíz '/'
                     path: 'dashboard/clients',
                     name: 'clients',
                     component: () => import('@modules/clients/views/ClientsView.vue')
+                },
+
+                {
+                    // Módulo de Empleados
+                    path: 'dashboard/employees',
+                    name: 'employees',
+                    component: () => import('@modules/employees/views/EmployeesView.vue')
                 }
 
                 // Aquí agregaremos empleados, paquetes, etc. a medida que los migremos
