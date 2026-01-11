@@ -7,7 +7,7 @@ const { toasts, removeToast } = useToast()
 const icons = {
     success: CheckCircle,
     error: AlertCircle,
-    warning: AlertCircle, // O un icono de warning específico
+    warning: AlertCircle,
     info: Info
 }
 
@@ -20,7 +20,7 @@ const colors = {
 </script>
 
 <template>
-    <div class="fixed top-4 right-4 z-[9999] flex flex-col gap-2 w-full max-w-sm pointer-events-none">
+    <div class="fixed top-4 right-4 left-4 md:left-auto z-[9999] flex flex-col gap-2 md:w-full md:max-w-sm pointer-events-none">
         <TransitionGroup name="toast">
             <div v-for="toast in toasts" :key="toast.id"
                 class="pointer-events-auto flex items-center p-4 rounded-lg border shadow-lg transition-all transform"
