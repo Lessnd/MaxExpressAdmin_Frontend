@@ -63,6 +63,13 @@ const router = createRouter({
                     component: () => import('@modules/routes/views/RoutesView.vue')
                 },
 
+                {
+                    // Módulo de Vehículos
+                    path: 'dashboard/vehicles',
+                    name: 'vehicles',
+                    component: () => import('@modules/vehicles/views/VehiclesView.vue')
+                },
+
                 // Aquí agregaremos empleados, paquetes, etc. a medida que los migremos
             ]
         },
