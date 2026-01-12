@@ -77,6 +77,13 @@ const router = createRouter({
                     component: () => import('@modules/trips/views/TripsView.vue')
                 },
 
+                {
+                    // Módulo de Entregas
+                    path: 'dashboard/deliveries',
+                    name: 'deliveries',
+                    component: () => import('@modules/deliveries/views/DeliveriesView.vue')
+                },
+
                 // Aquí agregaremos empleados, paquetes, etc. a medida que los migremos
             ]
         },
