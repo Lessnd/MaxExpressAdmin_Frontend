@@ -155,7 +155,7 @@ onMounted(fetchClients)
             </UiButton>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
             <UiStatsCard 
                 v-for="metric in clientMetrics" 
                 :key="metric.label" 
