@@ -55,6 +55,13 @@ const router = createRouter({
                     name: 'packages',
                     component: () => import('@modules/packages/views/PackagesView.vue')
                 },
+                
+                {
+                    // Módulo de Rutas
+                    path: 'dashboard/routes',
+                    name: 'routes',
+                    component: () => import('@modules/routes/views/RoutesView.vue')
+                },
 
                 // Aquí agregaremos empleados, paquetes, etc. a medida que los migremos
             ]
