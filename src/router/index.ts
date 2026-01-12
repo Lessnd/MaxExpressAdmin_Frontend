@@ -84,6 +84,13 @@ const router = createRouter({
                     component: () => import('@modules/deliveries/views/DeliveriesView.vue')
                 },
 
+                {
+                    // Módulo de Guía Operativa
+                    path: 'dashboard/guide',
+                    name: 'guide',
+                    component: () => import('@modules/guide/views/OperationalGuideView.vue')
+                },
+
                 // Aquí agregaremos empleados, paquetes, etc. a medida que los migremos
             ]
         },
