@@ -30,78 +30,75 @@ const router = createRouter({
                 {
                     path: 'dashboard',
                     name: 'dashboard',
-                    // Verificamos que coincida con tu árbol actual (Views vs Pages)
                     component: () => import('@modules/dashboard/views/DashboardView.vue')
                 },
 
-                // NUEVO: Módulo de Clientes
+                // Módulo de Clientes
                 {
-                    // Definimos la ruta completa relativa a la raíz '/'
                     path: 'dashboard/clients',
                     name: 'clients',
                     component: () => import('@modules/clients/views/ClientsView.vue')
                 },
 
+                // Módulo de Empleados
                 {
-                    // Módulo de Empleados
                     path: 'dashboard/employees',
                     name: 'employees',
                     component: () => import('@modules/employees/views/EmployeesView.vue')
                 },
                 
+                // Módulo de Paquetes
                 {
-                    // Módulo de Paquetes
                     path: 'dashboard/packages',
                     name: 'packages',
                     component: () => import('@modules/packages/views/PackagesView.vue')
                 },
                 
+                // Módulo de Rutas
                 {
-                    // Módulo de Rutas
                     path: 'dashboard/routes',
                     name: 'routes',
                     component: () => import('@modules/routes/views/RoutesView.vue')
                 },
 
+                // Módulo de Vehículos
                 {
-                    // Módulo de Vehículos
                     path: 'dashboard/vehicles',
                     name: 'vehicles',
                     component: () => import('@modules/vehicles/views/VehiclesView.vue')
                 },
 
+                // Módulo de Viajes
                 {
-                    // Módulo de Viajes
                     path: 'dashboard/trips',
                     name: 'trips',
                     component: () => import('@modules/trips/views/TripsView.vue')
                 },
 
+                // Módulo de Entregas
                 {
-                    // Módulo de Entregas
                     path: 'dashboard/deliveries',
                     name: 'deliveries',
                     component: () => import('@modules/deliveries/views/DeliveriesView.vue')
                 },
 
+                // Módulo de Guía Operativa
                 {
-                    // Módulo de Guía Operativa
                     path: 'dashboard/guide',
                     name: 'guide',
                     component: () => import('@modules/guide/views/OperationalGuideView.vue')
                 },
-
-                // Aquí agregaremos empleados, paquetes, etc. a medida que los migremos
             ]
         },
 
         /* -------------------------------------------------------------------------- */
         /* 3. CATCH-ALL (404)                                 */
         /* -------------------------------------------------------------------------- */
-        // Redirige cualquier ruta desconocida al dashboard para evitar pantallas blancas
+        // Captura cualquier ruta no definida y muestra la vista de error
         {
             path: '/:pathMatch(.*)*',
-            redirect: '/dashboard'
+            name: 'NotFound',
+            component: () => import('@/views/NotFoundView.vue')
         }
     ]
 })
