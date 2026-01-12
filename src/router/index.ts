@@ -70,6 +70,13 @@ const router = createRouter({
                     component: () => import('@modules/vehicles/views/VehiclesView.vue')
                 },
 
+                {
+                    // Módulo de Viajes
+                    path: 'dashboard/trips',
+                    name: 'trips',
+                    component: () => import('@modules/trips/views/TripsView.vue')
+                },
+
                 // Aquí agregaremos empleados, paquetes, etc. a medida que los migremos
             ]
         },
