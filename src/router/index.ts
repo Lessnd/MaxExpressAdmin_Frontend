@@ -47,7 +47,14 @@ const router = createRouter({
                     path: 'dashboard/employees',
                     name: 'employees',
                     component: () => import('@modules/employees/views/EmployeesView.vue')
-                }
+                },
+                
+                {
+                    // Módulo de Paquetes
+                    path: 'dashboard/packages',
+                    name: 'packages',
+                    component: () => import('@modules/packages/views/PackagesView.vue')
+                },
 
                 // Aquí agregaremos empleados, paquetes, etc. a medida que los migremos
             ]
