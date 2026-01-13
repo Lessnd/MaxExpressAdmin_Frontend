@@ -84,17 +84,18 @@ const confirmDelete = async () => {
     <div class="space-y-6">
         <UiToast />
 
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div class="flex justify-between items-center">
             <div>
                 <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Gestión de Flota</h1>
                 <p class="text-sm text-gray-500 mt-1">Control de vehículos y mantenimiento</p>
             </div>
             <UiButton @click="openCreate" class="bg-blue-600 text-white hover:bg-blue-700">
-                <Truck class="w-4 h-4 mr-2" /> Nuevo Vehículo
+                <Truck class="w-4 h-4 sm:mr-2" />
+                <span class="hidden sm:inline">Nuevo Vehículo</span>
             </UiButton>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             <UiStatsCard v-for="metric in metrics" :key="metric.label" :label="metric.label" :value="metric.value" :icon="metric.icon" />
         </div>
 

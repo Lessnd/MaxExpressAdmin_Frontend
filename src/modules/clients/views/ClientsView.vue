@@ -1,15 +1,16 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue' // <-- Agregar computed
+import { ref, onMounted, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { Plus, Trash2, Edit2, Eye, Users, UserCheck, UserX } from 'lucide-vue-next' // <-- Iconos para stats
+import { UserPlus, Trash2, Edit2, Eye, Users, UserCheck, UserX } from 'lucide-vue-next'
 
 // Components UI
-import UiButton from '@/shared/components/ui/UiButton.vue' // Asegúrate que el alias @ apunte bien
+import UiButton from '@/shared/components/ui/UiButton.vue'
 import UiInput from '@/shared/components/ui/UiInput.vue'
 import UiDataTable from '@/shared/components/ui/UiDataTable.vue'
 import UiModal from '@/shared/components/ui/UiModal.vue'
 import UiConfirmModal from '@/shared/components/ui/UiConfirmModal.vue'
-import UiStatsCard from '@/shared/components/ui/UiStatsCard.vue' // <--- 1. IMPORTAR STATS CARD
+import UiStatsCard from '@/shared/components/ui/UiStatsCard.vue'
+import UiToast from '@/shared/components/ui/UiToast.vue' // <--- FALTABA ESTA IMPORTACIÓN
 
 // Modules
 import ClientForm from '../components/ClientForm.vue'
@@ -48,8 +49,7 @@ const columns = [
     { header: 'Acciones', key: 'actions', class: 'text-right' }
 ]
 
-// --- MÉTRICAS CALCULADAS ---
-// Esto calcula los totales automáticamente basado en el array 'clients'
+// --- MÉTRICAS ---
 const clientMetrics = computed(() => [
     {
         label: 'Total Clientes',
@@ -66,7 +66,6 @@ const clientMetrics = computed(() => [
         value: clients.value.filter(c => c.status === 'INACTIVO').length,
         icon: UserX
     }
-    // Puedes agregar más métricas aquí si quieres
 ])
 
 // --- ACTIONS ---
@@ -92,20 +91,16 @@ const handleSaveClient = async (payload: any) => {
         await new Promise(r => setTimeout(r, 1000))
 
         if (selectedClient.value?.id) {
-            // MODO EDICIÓN
             const index = clients.value.findIndex(c => c.id === selectedClient.value?.id)
             if (index !== -1) {
-                // Actualizamos localmente mezclando el cliente existente con el payload nuevo
                 clients.value[index] = { ...clients.value[index], ...payload }
             }
             addToast('Cliente actualizado correctamente', 'success')
         } else {
-            // MODO CREACIÓN
-            // Simulamos creación agregando al array local
-            const newClient = { 
-                id: Math.random().toString(), 
-                status: 'ACTIVO', 
-                ...payload 
+            const newClient = {
+                id: Math.random().toString(),
+                status: 'ACTIVO',
+                ...payload
             }
             clients.value.unshift(newClient)
             addToast('Cliente creado correctamente', 'success')
@@ -120,10 +115,10 @@ const handleSaveClient = async (payload: any) => {
 
 const fetchClients = async () => {
     loading.value = true
-    try { 
-        clients.value = await clientsService.getAll() 
-    } finally { 
-        loading.value = false 
+    try {
+        clients.value = await clientsService.getAll()
+    } finally {
+        loading.value = false
     }
 }
 
@@ -145,24 +140,24 @@ onMounted(fetchClients)
 
 <template>
     <div class="space-y-6">
+        <UiToast />
+
         <div class="flex justify-between items-center">
             <div>
                 <h1 class="text-2xl font-bold text-gray-900">{{ t('dashboard.menu.clients') }}</h1>
                 <p class="text-sm text-gray-500 mt-1">Gestiona tu base de clientes</p>
             </div>
-            <UiButton @click="openCreateModal" class="bg-blue-600 text-white hover:bg-blue-700">
-                <Plus class="w-4 h-4 mr-2" />Nuevo Cliente
+
+            <UiButton @click="openCreateModal"
+                class="bg-blue-600 text-white hover:bg-blue-700">
+                <UserPlus class="w-4 h-4 sm:mr-2" />
+                <span class="hidden sm:inline">Nuevo Cliente</span>
             </UiButton>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
-            <UiStatsCard 
-                v-for="metric in clientMetrics" 
-                :key="metric.label" 
-                :label="metric.label"
-                :value="metric.value" 
-                :icon="metric.icon" 
-            />
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            <UiStatsCard v-for="metric in clientMetrics" :key="metric.label" :label="metric.label" :value="metric.value"
+                :icon="metric.icon" />
         </div>
 
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
@@ -174,11 +169,12 @@ onMounted(fetchClients)
 
                 <template #cell-name="{ row }">
                     <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 font-bold text-xs border border-blue-100">
+                        <div
+                            class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 font-bold text-xs border border-blue-100 shrink-0">
                             {{ (row as Client).name.charAt(0).toUpperCase() }}
                         </div>
                         <button @click="openDetailsModal(row as Client)"
-                            class="hover:text-blue-600 hover:underline font-medium text-left text-gray-900 transition-colors">
+                            class="hover:text-blue-600 hover:underline font-medium text-left text-gray-900 transition-colors truncate">
                             {{ (row as Client).name }}
                         </button>
                     </div>
@@ -191,9 +187,9 @@ onMounted(fetchClients)
                         'bg-yellow-50 text-yellow-700 border-yellow-200': (row as Client).status === 'PENDIENTE'
                     }">
                         <span class="w-1.5 h-1.5 rounded-full mr-1.5" :class="{
-                             'bg-green-600': (row as Client).status === 'ACTIVO',
-                             'bg-red-600': (row as Client).status === 'INACTIVO',
-                             'bg-yellow-600': (row as Client).status === 'PENDIENTE'
+                            'bg-green-600': (row as Client).status === 'ACTIVO',
+                            'bg-red-600': (row as Client).status === 'INACTIVO',
+                            'bg-yellow-600': (row as Client).status === 'PENDIENTE'
                         }"></span>
                         {{ (row as Client).status }}
                     </span>
