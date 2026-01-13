@@ -16,9 +16,6 @@ const goHome = () => router.push('/dashboard')
                 <div class="w-32 h-32 bg-blue-50 rounded-full flex items-center justify-center mx-auto border-4 border-white shadow-sm">
                     <MapPinOff class="w-16 h-16 text-blue-600" />
                 </div>
-                <div class="absolute -bottom-2 -right-2 bg-yellow-100 p-2 rounded-full border-4 border-white">
-                    <span class="text-2xl">🚧</span>
-                </div>
             </div>
 
             <div class="space-y-3">
