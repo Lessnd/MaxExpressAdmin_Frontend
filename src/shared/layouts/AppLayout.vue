@@ -3,17 +3,32 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import AppSidebar from './AppSidebar.vue'
 import AppHeader from './AppHeader.vue'
 
-// Estado UI
-const isSidebarOpen = ref(true)
+// 1. Detectamos si estamos en un entorno con ventana (Cliente)
+const isClient = typeof window !== 'undefined'
+
+// 2. Inicializamos el estado BASADO en el ancho real inicial, no en valores fijos
+const isMobile = ref(isClient ? window.innerWidth < 1024 : false)
+
+// 3. El estado inicial del sidebar depende de si es móvil o no
+// Si es móvil (true) -> Sidebar cerrado (false)
+// Si es escritorio (false) -> Sidebar abierto (true)
+const isSidebarOpen = ref(!isMobile.value)
+
 const isCollapsed = ref(false)
-const isMobile = ref(false)
 
 const handleResize = () => {
-    isMobile.value = window.innerWidth < 1024
-    if (!isMobile.value) {
-        isSidebarOpen.value = true
-    } else {
-        isSidebarOpen.value = false
+    const mobile = window.innerWidth < 1024
+    
+    // Solo actualizamos si hubo un cambio real de breakpoint para evitar reactividad innecesaria
+    if (mobile !== isMobile.value) {
+        isMobile.value = mobile
+        
+        // Si pasamos a escritorio, abrimos. Si pasamos a móvil, cerramos.
+        if (!mobile) {
+            isSidebarOpen.value = true
+        } else {
+            isSidebarOpen.value = false
+        }
     }
 }
 
@@ -26,7 +41,8 @@ const toggleSidebar = () => {
 }
 
 onMounted(() => {
-    handleResize()
+    // Ya no necesitamos llamar a handleResize() aquí para inicializar,
+    // pero sí necesitamos el listener para cambios futuros.
     window.addEventListener('resize', handleResize)
 })
 
@@ -35,8 +51,12 @@ onUnmounted(() => window.removeEventListener('resize', handleResize))
 
 <template>
     <div class="flex h-screen bg-bg-app overflow-hidden">
-        <AppSidebar :is-open="isSidebarOpen" :is-collapsed="isCollapsed" :is-mobile="isMobile"
-            @close="isSidebarOpen = false" @logout="() => console.log('Logout click')" />
+        <AppSidebar 
+            :is-open="isSidebarOpen" 
+            :is-collapsed="isCollapsed" 
+            :is-mobile="isMobile"
+            @close="isSidebarOpen = false" 
+        />
 
         <div class="flex flex-col flex-1 min-w-0">
             <AppHeader @toggle-sidebar="toggleSidebar" user-name="Max User" />

@@ -2,7 +2,7 @@
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { LogOut, X } from 'lucide-vue-next'
-import { MENU_ITEMS } from '@modules/dashboard/constants/menu'
+import { MENU_ITEMS } from '@/modules/dashboard/constants/menu' // Asegúrate que el alias sea correcto (@ o @/)
 
 // Definimos props visuales
 defineProps<{
@@ -41,12 +41,12 @@ const items = MENU_ITEMS
 <template>
     <div 
         v-if="isMobile && isOpen" 
-        class="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 transition-opacity"
+        class="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 transition-opacity duration-500"
         @click="$emit('close')"
     ></div>
 
     <aside
-        class="fixed lg:static top-0 left-0 z-40 h-full flex flex-col shadow-xl lg:shadow-none transition-all duration-300 overflow-hidden bg-slate-900 text-white"
+        class="fixed lg:static top-0 left-0 z-40 h-full flex flex-col shadow-2xl lg:shadow-none transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] overflow-hidden bg-slate-900 text-white"
         :class="[
             isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
             !isMobile && isCollapsed ? 'w-20' : 'w-64'
@@ -56,7 +56,7 @@ const items = MENU_ITEMS
             <div class="flex items-center gap-3 overflow-hidden">
                 <div class="bg-gradient-to-br from-yellow-400 to-orange-500 min-w-[2.5rem] h-10 rounded-full flex items-center justify-center shadow-md shrink-0">
                     <img 
-                        src="@shared/assets/images/max-express-logo.png" 
+                        src="@/shared/assets/images/max-express-logo.png" 
                         alt="logo"
                         class="w-full h-full object-cover rounded-full" 
                     />
