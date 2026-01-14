@@ -29,7 +29,7 @@ const handleLogin = async () => {
 
     isLoading.value = true
     try {
-        const success = await authService.login(form.value.email, form.value.password)
+        const success = await authService.login(form.value.password)
         
         if (success) {
             addToast(t('Inicio de sesión exitoso'), 'success')

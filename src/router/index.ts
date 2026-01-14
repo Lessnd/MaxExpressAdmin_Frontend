@@ -24,7 +24,7 @@ const router = createRouter({
         {
             path: '/',
             component: AppLayout,
-            redirect: '/dashboard',
+            redirect: '/auth/login', // Redirige a login por defecto
             children: [
                 // Dashboard Principal
                 {
