@@ -1,79 +1,116 @@
 <script setup lang="ts">
 import { ref, nextTick } from 'vue'
 
-// Usamos defineModel para doble enlace automático con el array de strings
 const modelValue = defineModel<string[]>({ required: true })
-
 const inputRefs = ref<HTMLInputElement[]>([])
+
+/**
+ * 1. AUTO-SELECCIÓN: Al enfocar, seleccionamos el texto.
+ * Esto es clave: al estar seleccionado, escribir un número REEMPLAZA
+ * automáticamente al anterior, evitando que se concatenen visualmente.
+ */
+const handleFocus = (event: Event) => {
+    const target = event.target as HTMLInputElement
+    target.select()
+}
 
 const handleInput = (event: Event, index: number) => {
     const target = event.target as HTMLInputElement
-    const val = target.value
+    let val = target.value
 
-    // 1. DETECCIÓN DE PEGADO MÓVIL (AUTOFILL)
-    // Si el valor tiene más de 1 caracter, el usuario pegó o autocompletó
+    // --- A. MANEJO DE AUTOCOMPLETE / PEGADO (Longitud > 1) ---
     if (val.length > 1) {
         const numbers = val.replace(/\D/g, '').split('').slice(0, 6)
         
         if (numbers.length > 0) {
-            // Distribuimos los números en las casillas
             numbers.forEach((num, i) => {
-                // Empezamos a llenar desde el índice 0 para asegurar consistencia
-                if (i < 6) modelValue.value[i] = num
+                // Solo llenamos si estamos dentro del rango 0-5
+                if (index + i < 6) {
+                    modelValue.value[index + i] = num
+                }
             })
 
-            // Enfocamos la casilla correspondiente al final
-            const nextIndex = Math.min(numbers.length, 5)
+            // Calculamos dónde debe quedar el foco
+            const nextIndex = Math.min(index + numbers.length, 5)
             nextTick(() => inputRefs.value[nextIndex]?.focus())
             
-            // Forzamos la actualización visual del input actual para que no se quede con el string largo
-            target.value = numbers[index] || '' 
-            
-            // Importante: Detenemos la ejecución aquí
+            // Forzamos visualmente el valor de ESTA casilla al número que le corresponde
+            target.value = modelValue.value[index] || ''
             return
         }
     }
 
-    // 2. LÓGICA ESTÁNDAR (UN SOLO DÍGITO)
-    
-    // Si no es número, limpiar
+    // --- B. MANEJO DE ESCRITURA NORMAL (1 Dígito) ---
+
+    // 1. Si no es un número, rechazamos el cambio inmediatamente
     if (!/^\d*$/.test(val)) {
-        target.value = ''
+        target.value = modelValue.value[index] || ''
         return
     }
 
-    // Guardamos solo el último caracter digitado
-    modelValue.value[index] = val.slice(-1)
+    // 2. Si hay valor, aplicamos REEMPLAZO ESTRICTO
+    if (val) {
+        // Tomamos el ÚLTIMO caracter escrito (por si el navegador concatenó "12")
+        const digit = val.slice(-1)
+        
+        // Actualizamos modelo y vista
+        modelValue.value[index] = digit
+        target.value = digit
 
-    // Auto-foco al siguiente
-    if (val && index < modelValue.value.length - 1) {
-        nextTick(() => {
-            const nextInput = inputRefs.value[index + 1]
-            if (nextInput) nextInput.focus()
-        })
+        // Avanzamos el foco si no estamos en el último
+        if (index < 5) {
+            nextTick(() => inputRefs.value[index + 1]?.focus())
+        }
+    } else {
+        // Si el usuario borró todo (ej: seleccionó y presionó suprimir)
+        modelValue.value[index] = ''
     }
 }
 
 const handleKeyDown = (event: KeyboardEvent, index: number) => {
-    if (event.key === 'Backspace' && !modelValue.value[index] && index > 0) {
-        nextTick(() => {
-            const prevInput = inputRefs.value[index - 1]
-            if (prevInput) prevInput.focus()
-        })
+    // Navegación con flechas
+    if (event.key === 'ArrowLeft' && index > 0) {
+        event.preventDefault()
+        inputRefs.value[index - 1]?.focus()
+        return
+    }
+    if (event.key === 'ArrowRight' && index < 5) {
+        event.preventDefault()
+        inputRefs.value[index + 1]?.focus()
+        return
+    }
+
+    // Backspace: Si la casilla está vacía, retrocedemos y borramos la anterior
+    if (event.key === 'Backspace') {
+        if (!modelValue.value[index] && index > 0) {
+            modelValue.value[index - 1] = ''
+            nextTick(() => inputRefs.value[index - 1]?.focus())
+        } else {
+            // Si tiene valor, se borra el actual (comportamiento default),
+            // pero aseguramos limpiar el modelo
+            modelValue.value[index] = ''
+        }
     }
 }
 
-// Mantenemos handlePaste para Desktop (Ctrl+V)
+// Mantenemos soporte explícito para pegar (Ctrl+V) en escritorio
 const handlePaste = (event: ClipboardEvent) => {
-    event.preventDefault()
+    event.preventDefault() // Evitamos el pegado default para control total
     const text = event.clipboardData?.getData('text') || ''
     const numbers = text.replace(/\D/g, '').split('').slice(0, 6)
 
     if (numbers.length > 0) {
+        // Llenamos desde la posición actual (index)
+        // Nota: handlePaste no recibe index directamente en el template event si no se pasa,
+        // pero como los inputs son individuales, el evento ocurre en el focused.
+        // Simplificamos asumiendo llenado desde el 0 o lógica inteligente:
+        
+        // Estrategia simple: Llenar desde el primer slot vacío o desde el 0
+        // Para consistencia con OTPs, usualmente pegar llena todo el array
         numbers.forEach((num, i) => {
             if (i < 6) modelValue.value[i] = num
         })
-        const nextIndex = Math.min(numbers.length, 5)
+        const nextIndex = Math.min(numbers.length - 1, 5)
         nextTick(() => inputRefs.value[nextIndex]?.focus())
     }
 }
@@ -87,12 +124,13 @@ const handlePaste = (event: ClipboardEvent) => {
             :ref="(el) => { if (el) inputRefs[index] = el as HTMLInputElement }" 
             type="text" 
             inputmode="numeric"
-            maxlength="6" 
+            maxlength="1" 
             :value="modelValue[index]" 
             @input="handleInput($event, index)"
             @keydown="handleKeyDown($event, index)" 
+            @focus="handleFocus" 
             @paste="handlePaste"
-            class="w-10 h-12 sm:w-12 sm:h-14 text-center text-xl font-bold border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all bg-white shadow-sm"
+            class="w-10 h-12 sm:w-12 sm:h-14 text-center text-xl font-bold border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all bg-white shadow-sm caret-transparent"
             :class="{ 'border-primary ring-1 ring-primary/20': modelValue[index] }" 
         />
     </div>

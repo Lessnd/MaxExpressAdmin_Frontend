@@ -1,14 +1,18 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useI18n } from 'vue-i18n' // 1. Importar librería
+import { useI18n } from 'vue-i18n'
 import AuthHeader from '../components/AuthHeader.vue'
-import UiInput from '@shared/components/ui/UiInput.vue'
-import UiButton from '@shared/components/ui/UiButton.vue'
+import UiInput from '@/shared/components/ui/UiInput.vue'
+import UiButton from '@/shared/components/ui/UiButton.vue'
+import UiToast from '@/shared/components/ui/UiToast.vue' // <--- IMPORTANTE
+
+import { authService } from '../services/auth.service'
+import { useToast } from '@/shared/composables/useToast'
 
 const router = useRouter()
-// 2. Extraer 't' (translate) y 'locale' (idioma actual)
-const { locale } = useI18n()
+const { t, locale } = useI18n()
+const { addToast } = useToast() // <--- Hook de Toast
 
 const isLoading = ref(false)
 
@@ -18,15 +22,31 @@ const form = ref({
 })
 
 const handleLogin = async () => {
+    if (!form.value.email || !form.value.password) {
+        addToast(t('Por favor complete los campos e intente nuevamente, no sea burro'), 'error') // Necesitas agregar esta key o usar string directo
+        return
+    }
+
     isLoading.value = true
-    // Simulación de login
-    setTimeout(() => {
+    try {
+        const success = await authService.login(form.value.email, form.value.password)
+        
+        if (success) {
+            addToast(t('Inicio de sesión exitoso'), 'success')
+            // Pequeña espera para UX
+            setTimeout(() => {
+                router.push('/auth/verification')
+            }, 500)
+        } else {
+            addToast(t('Usuario o contraseña incorrectos, intente nuevamente'), 'error')
+        }
+    } catch (error) {
+        addToast('Error de conexión', 'error')
+    } finally {
         isLoading.value = false
-        router.push('/auth/verification')
-    }, 1000)
+    }
 }
 
-// 3. Función temporal para alternar idiomas (Solo para pruebas)
 const toggleLanguage = () => {
     locale.value = locale.value === 'es' ? 'en' : 'es'
 }
@@ -34,8 +54,7 @@ const toggleLanguage = () => {
 
 <template>
     <div class="min-h-screen flex items-center justify-center bg-bg-app p-4 relative">
-
-        <button @click="toggleLanguage"
+        <UiToast /> <button @click="toggleLanguage"
             class="absolute top-5 right-5 px-3 py-1.5 bg-white border border-gray-200 shadow-sm rounded-md text-sm font-medium hover:bg-gray-50 transition-colors z-50 flex items-center gap-2">
             <span>{{ locale === 'es' ? 'Español' : 'English' }}</span>
         </button>

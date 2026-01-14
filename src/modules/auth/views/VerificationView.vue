@@ -2,6 +2,7 @@
 import { useRouter } from 'vue-router'
 import AuthHeader from '../components/AuthHeader.vue'
 import VerificationForm from '../components/VerificationForm.vue'
+import UiToast from '@/shared/components/ui/UiToast.vue' // <--- IMPORTANTE
 
 const router = useRouter()
 
@@ -12,7 +13,7 @@ const handleBack = () => {
 
 <template>
     <div class="min-h-screen flex items-center justify-center bg-bg-app p-4">
-        <div
+        <UiToast /> <div
             class="bg-white shadow-xl rounded-2xl overflow-hidden flex flex-col md:flex-row w-full max-w-4xl min-h-[500px]">
 
             <AuthHeader />

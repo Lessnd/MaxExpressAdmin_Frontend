@@ -1,36 +1,46 @@
+// 📁 src/modules/auth/composables/useVerification.ts
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { authService } from '../services/auth.service'
+import { useToast } from '@/shared/composables/useToast'
 
 export function useVerification() {
     const router = useRouter()
-    const isLoading = ref(false)
+    const { addToast } = useToast()
+    
+    // Array de 6 strings vacíos
     const code = ref<string[]>(new Array(6).fill(''))
+    const isLoading = ref(false)
     const errorMessage = ref('')
 
-    // Validar si los 6 campos están llenos
-    const isFormValid = computed(() => code.value.every(digit => digit !== ''))
+    const isFormValid = computed(() => {
+        // Verifica que todos los campos tengan un dígito
+        return code.value.every(digit => digit !== '' && /^\d$/.test(digit))
+    })
 
     const verifyCode = async () => {
-        isLoading.value = true
         errorMessage.value = ''
+        isLoading.value = true
+        
+        const codeString = code.value.join('')
 
         try {
-            // Simulación de API
-            await new Promise(resolve => setTimeout(resolve, 1500))
-
-            // Simular éxito (puedes cambiar esto para probar errores)
-            const success = true
-
-            if (success) {
-                // Redirigir al dashboard
-                router.push('/dashboard')
-                return { success: true }
+            const isValid = await authService.verifyCode(codeString)
+            
+            if (isValid) {
+                addToast('Verificación exitosa', 'success')
+                setTimeout(() => {
+                    router.push('/dashboard')
+                }, 500)
             } else {
-                throw new Error('Código inválido')
+                errorMessage.value = 'Código inválido o expirado'
+                addToast('Código incorrecto', 'error')
+                // Opcional: Limpiar código
+                code.value = new Array(6).fill('')
             }
-        } catch (e) {
-            errorMessage.value = 'El código ingresado es incorrecto o ha expirado.'
-            return { success: false }
+        } catch (error) {
+            errorMessage.value = 'Error de conexión'
+            addToast('Error al verificar', 'error')
         } finally {
             isLoading.value = false
         }
