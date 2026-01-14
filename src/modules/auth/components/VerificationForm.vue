@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ArrowLeft } from 'lucide-vue-next'
-import UiButton from '@shared/components/ui/UiButton.vue'
+import UiButton from '@/shared/components/ui/UiButton.vue' // Ajusta el alias según tu proyecto (@ o @shared)
 import AuthCodeInput from './AuthCodeInput.vue'
 import { useVerification } from '../composables/useVerification'
 
@@ -14,16 +14,17 @@ const handleSubmit = async () => {
 </script>
 
 <template>
-    <div class="p-8 md:p-12 w-full md:w-1/2 flex flex-col justify-center relative">
+    <div class="p-6 md:p-12 w-full md:w-1/2 flex flex-col justify-center relative">
+        
         <button @click="$emit('back')"
-            class="absolute top-8 left-8 flex items-center text-sm text-gray-500 hover:text-gray-800 transition-colors">
+            class="mb-6 md:mb-0 md:absolute md:top-8 md:left-8 flex items-center text-sm text-gray-500 hover:text-gray-800 transition-colors self-start">
             <ArrowLeft class="w-4 h-4 mr-1" />
             Volver
         </button>
 
-        <div class="text-center mt-8">
-            <h2 class="text-2xl font-bold text-gray-900">Verificación</h2>
-            <p class="text-gray-500 text-sm mt-2 px-4">
+        <div class="text-center">
+            <h2 class="text-2xl font-bold text-gray-900 md:mt-8">Verificación</h2>
+            <p class="text-gray-500 text-sm mt-2 px-2 md:px-4">
                 Hemos enviado un código de 6 dígitos a tu correo electrónico.
             </p>
         </div>

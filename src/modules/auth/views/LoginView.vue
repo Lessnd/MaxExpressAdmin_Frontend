@@ -23,7 +23,7 @@ const form = ref({
 
 const handleLogin = async () => {
     if (!form.value.email || !form.value.password) {
-        addToast(t('Por favor complete los campos e intente nuevamente, no sea burro'), 'error') // Necesitas agregar esta key o usar string directo
+        addToast(t('Por favor complete los campos e intente nuevamente'), 'error') // Necesitas agregar esta key o usar string directo
         return
     }
 
@@ -54,13 +54,15 @@ const toggleLanguage = () => {
 
 <template>
     <div class="min-h-screen flex items-center justify-center bg-bg-app p-4 relative">
-        <UiToast /> <button @click="toggleLanguage"
+        <UiToast /> 
+        
+        <button @click="toggleLanguage"
             class="absolute top-5 right-5 px-3 py-1.5 bg-white border border-gray-200 shadow-sm rounded-md text-sm font-medium hover:bg-gray-50 transition-colors z-50 flex items-center gap-2">
             <span>{{ locale === 'es' ? 'Español' : 'English' }}</span>
         </button>
 
         <div
-            class="bg-white shadow-xl rounded-2xl overflow-hidden flex flex-col md:flex-row w-full max-w-4xl h-auto md:min-h-[500px]">
+            class="bg-white shadow-xl rounded-2xl overflow-hidden flex flex-col md:flex-row w-full max-w-4xl h-auto md:min-h-[500px] animate-card-entry">
 
             <AuthHeader />
 
@@ -94,3 +96,21 @@ const toggleLanguage = () => {
         </div>
     </div>
 </template>
+
+<style scoped>
+/* AÑADIDO: Definición de la animación */
+.animate-card-entry {
+    animation: cardEntry 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes cardEntry {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+</style>
