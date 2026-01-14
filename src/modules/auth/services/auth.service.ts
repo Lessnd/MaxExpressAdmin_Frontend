@@ -1,13 +1,13 @@
 // 📁 src/modules/auth/services/auth.service.ts
 
 export const authService = {
-    async login(email: string, password: string): Promise<boolean> {
+    async login(password: string): Promise<boolean> {
         // Simular latencia de red
         await new Promise(resolve => setTimeout(resolve, 1500))
 
-        // Simular validación (Acepta cualquier email, pero password debe ser "admin123")
+        // Simulación de validación (Acepta cualquier email, pero password debe ser "123123")
         // En producción esto iría a tu API real
-        if (email === 'david.alessandre04@gmail.com' && password === '123123') {
+        if (password === '123123') {
             return true
         }
         return false
