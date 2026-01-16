@@ -23,7 +23,7 @@ const form = ref({
 
 const handleLogin = async () => {
     if (!form.value.email || !form.value.password) {
-        addToast(t('Por favor complete los campos e intente nuevamente'), 'error') // Necesitas agregar esta key o usar string directo
+        addToast(t('Por favor complete los campos e intente nuevamente'), 'error') 
         return
     }
 
